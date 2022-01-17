@@ -43,12 +43,11 @@ export default {
       email: null,
       password: null,
       error: null,
+      errorMsg:null
     };
   },
   methods: {
-    errorMsg() {
-      return;
-    },
+ 
   },
 };
 </script>

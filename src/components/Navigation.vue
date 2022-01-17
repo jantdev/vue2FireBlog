@@ -7,36 +7,29 @@
         >
       </div>
       <div class="nav-links">
-         <ul v-show="!mobile">
-          <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-          <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
-        
-        </ul>
+        <RouterLinks v-if="!mobile" />
       </div>
     </nav>
-      <menuIcon @click="toggleMobileNav" class="menu-icon" v-show="mobile" />
+    <menuIcon @click="toggleMobileNav" class="menu-icon" v-show="mobile" />
     <transition name="mobile-nav">
-      <ul class="mobile-nav" v-show="mobileNav">
-        <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-        <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
-       
-      </ul>
+      <RouterLinks navStyle="mobile-nav" v-if="mobileNav" />
     </transition>
   </header>
 </template>
 
 <script>
 import menuIcon from "../assets/Icons/bars-regular.svg";
-
+import RouterLinks from "./RouterLinks";
 
 export default {
   name: "Navigation",
   components: {
-    menuIcon
+    menuIcon,
+    RouterLinks,
   },
   data() {
     return {
-      mobile: null,
+      mobile: false,
       mobileNav: null,
       windowWidth: null,
     };
@@ -63,11 +56,12 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss" >
 header {
   background-color: #fff;
   padding: 0 25px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+    0 2px 4px -1px rgba(0, 0, 0, 0.06);
   z-index: 99;
   .link {
     font-weight: 500;
@@ -125,7 +119,8 @@ header {
           right: 0;
           width: 250px;
           background-color: #303030;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
           .info {
             display: flex;
             align-items: center;
