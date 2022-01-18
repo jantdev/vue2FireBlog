@@ -11,7 +11,8 @@
 <script>
 import Navigation from './components/Navigation'
 import Footer from "./components/Footer"
-
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "app",
@@ -22,6 +23,13 @@ export default {
     };
   },
   created() {
+    firebase.auth().onAuthStateChanged((user)=>{
+      this.$store.commit('updateUser',user)
+      if(user){
+        this.$store.dispatch('getCurrentUser',user)
+        console.log(this.$store.state.profileEmail)
+      }
+    })
     this.checkRoute()
   },
   mounted() {},
@@ -150,5 +158,10 @@ button,
       grid-template-columns: repeat(4, 1fr);
     }
   }
+}
+.error{
+  text-align: center;
+  font-size: 12px;
+  color:red;
 }
 </style>

@@ -20,12 +20,7 @@
           </ul>
         </div>
         <div class="col-2">
-          <ul>
-            <router-link class="link" :to="{ name: 'Home' }">Home</router-link>
-            <router-link class="link" :to="{ name: 'Blogs' }">Blogs</router-link>
-            <router-link v-if="admin" class="link" to="#">Create Post</router-link>
-            <router-link v-if="!user" class="link" :to="{ name: 'Login' }">Login In / Register</router-link>
-          </ul>
+          <RouterLinks/>
         </div>
       </div>
       <div class="right">
@@ -40,6 +35,7 @@ import youTube from "../assets/Icons/youtube-brands.svg";
 import twitter from "../assets/Icons/twitter-brands.svg";
 import instagram from "../assets/Icons/instagram-brands.svg";
 import linkedin from "../assets/Icons/linkedin-brands.svg";
+import RouterLinks from "../components/RouterLinks"
 export default {
   name: "footer-vue",
   components: {
@@ -47,6 +43,7 @@ export default {
     twitter,
     instagram,
     linkedin,
+    RouterLinks
   },
   computed: {
     user() {
@@ -59,7 +56,7 @@ export default {
 };
 </script>
 
-<style lang="scss" scoped>
+<style lang="scss">
 footer {
   margin-top: auto;
   padding: 100px 25px;
