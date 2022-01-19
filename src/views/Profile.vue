@@ -9,7 +9,7 @@
       <h2>Account Settings</h2>
       <div class="profile-info">
         <div class="initials">{{ $store.state.profileInitials }}</div>
-        <div class="admin-badge">
+        <div class="admin-badge" v-if="admin">
           <adminIcon class="icon" />
           <span>admin</span>
         </div>
@@ -42,10 +42,6 @@ export default {
   name: "Profile",
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
       modalActive: false,
       modalMessage: "",
     };
@@ -55,11 +51,47 @@ export default {
     adminIcon,
   },
   methods: {
-    updateProfile() {},
+    updateProfile() {
+      this.$store.dispatch("updateProfileSettings")
+      this.modalActive = !this.modalActive;
+    },
+    closeModal(){
+      this.modalActive = !this.modalActive
+    }
   },
   computed: {
     user() {
       return this.$store.state.user;
+    },
+    admin(){
+      return this.$store.state.profileAdmin
+    },
+    firstName: {
+      get() {
+        return this.$store.state.profileFirstName;
+      },
+      set(payload) {
+        this.$store.commit("changeFirstName", payload);
+      },
+    },
+    lastName: {
+      get() {
+        return this.$store.state.profileLastName;
+      },
+      set(payload) {
+        this.$store.commit("changeLastName", payload);
+      },
+    },
+    username: {
+      get() {
+        return this.$store.state.profileUsername;
+      },
+      set(payload) {
+        this.$store.commit("changeUsername", payload);
+      },
+    },
+    email() {
+      return this.$store.state.profileEmail;
     },
   },
 };

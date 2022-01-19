@@ -7,10 +7,10 @@
         >
       </div>
       <div class="nav-links">
-        <RouterLinks v-if="!mobile" :user="user"/>
+        <RouterLinks v-if="!mobile" :user="user" :admin="admin"/>
         <div v-show="user" @click="toggleProfileMenu" class="profile" ref="profile" v-if="!mobile">
           <span>{{ this.$store.state.profileInitials }}</span>
-          <div class="profile-menu" v-show="profileMenu" >
+          <div class="profile-menu" v-if="profileMenu" >
             <div class="info">
               <p class="initials">{{ this.$store.state.profileInitials }}</p>
               <div class="right">
@@ -24,13 +24,13 @@
               </div>
               <div class="options"  >
                 <div class="option">
-                  <router-link :to="{name:'Profile'}" class="option">
+                  <router-link :to="{name:'Profile'}" class="option" @click="toggleProfileMenu">
                     <userIcon class="icon"/>
                     <p>Profile</p>
                   </router-link>
                 </div>
-                 <div class="option">
-                  <router-link :to="{name:'Admin'}" class="option">
+                 <div class="option" v-if="admin">
+                  <router-link :to="{name:'Admin'}" class="option" @click="toggleProfileMenu">
                     <adminIcon class="icon"/>
                     <p>Admin</p>
                   </router-link>
@@ -105,10 +105,9 @@ export default {
       this.mobileNav = !this.mobileNav;
 
     },
-    toggleProfileMenu(e){
-      if(e.target === this.$refs.profile){
+    toggleProfileMenu(){
+    
       this.profileMenu = !this.profileMenu
-      }
     },
     signOut(){
       firebase.auth().signOut()
@@ -118,6 +117,9 @@ export default {
   computed:{
     user(){
       return this.$store.state.user
+    },
+    admin(){
+      return this.$store.state.profileAdmin
     }
   }
 };

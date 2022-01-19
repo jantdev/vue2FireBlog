@@ -52,11 +52,12 @@ export default {
   },
   data() {
     return {
-      firstName: "",
-      lastName: "",
-      username: "",
-      email: "",
-      password: "",
+      firstName: "y",
+      lastName: "y",
+      username: "y",
+      email: "y@y.yy",
+      admin:false,
+      password: "123456",
       error: null,
       errorMsg: "",
     };
@@ -66,6 +67,7 @@ export default {
       if (
         this.email !== "" &&
         this.password !== "" &&
+        this.password.length>5 &&
         this.firstName !== "" &&
         this.lastName !== "" &&
         this.username !== ""
@@ -73,20 +75,28 @@ export default {
         this.error = false;
         this.errorMsg = "";
         const firebaseAuth = await firebase.auth();
-        const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password);
-        const result = await createUser;
-        const dataBase = db.collection("users").doc(result.user.uid);
-        await dataBase.set({
-          firstName: this.firstName,
-          lastName: this.lastName,
-          username: this.username,
-          email: this.email,
-        });
-        this.$router.push({ name: "Home" });
+         const createUser = await firebaseAuth.createUserWithEmailAndPassword(this.email, this.password).catch(err=>{
+          this.error = true
+          this.errorMsg = err.message
+          return
+        })
+        if(!this.error){
+          const result = await createUser;
+          
+          const dataBase = db.collection("users").doc(result.user.uid);
+          await dataBase.set({
+            firstName: this.firstName,
+            lastName: this.lastName,
+            username: this.username,
+            email: this.email,
+            admin:this.admin
+          });
+          this.$router.push({ name: "Home" });
+        }  
         return;
       }
       this.error = true;
-      this.errorMsg = "Please fill out all the fields!";
+      this.errorMsg = "Please fill out all the fields, password more then 5 characters!";
       return;
     },
   },

@@ -2,7 +2,7 @@
   <ul :class="navStyle">
     <router-link class="link" :to="{ name: 'Home' }" @click.native="closeNav">Home</router-link>
     <router-link class="link" :to="{ name: 'Blogs' }" @click.native="closeNav">Blogs</router-link>
-    <router-link class="link" v-if="user" :to="{ name: 'CreatePost' }" @click.native="closeNav"
+    <router-link class="link" v-if="admin" :to="{ name: 'CreatePost' }" @click.native="closeNav"
       >Create Post</router-link
     >
     <router-link class="link" v-if="!user" :to="{ name: 'Login' }" @click.native="closeNav"
@@ -14,7 +14,7 @@
 
 <script>
 export default {
-  props: ["navStyle","user"],
+  props: ["navStyle","user","admin"],
   methods:{
     closeNav(){
 
