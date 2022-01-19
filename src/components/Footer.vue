@@ -20,7 +20,7 @@
           </ul>
         </div>
         <div class="col-2">
-          <RouterLinks/>
+          <RouterLinks :user="user"/>
         </div>
       </div>
       <div class="right">

@@ -1,12 +1,12 @@
 <template>
-  <div class="blog-wrapper no-user">
+  <div class="blog-wrapper" :class="{'no-user':!user} ">
     <div class="blog-content">
       <div>
         <h2 v-if="post.welcomeScreen">{{ post.title }}</h2>
         <h2 v-else>{{ post.blogTitle }}</h2>
         <p v-if="post.welcomeScreen">{{ post.blogPost }}</p>
         <p class="content-preview" v-else v-html="post.blogHTML"></p>
-        <router-link class="link link-light" v-if="post.welcomeScreen" to="#">
+        <router-link class="link link-light" v-if="post.welcomeScreen" :to="{name:'Login'}">
           Login/Register<Arrow class="arrow arrow-light" />
         </router-link>
         <router-link
@@ -39,6 +39,11 @@ export default {
   name: "BlogPost",
   props: ["post"],
   components: { Arrow },
+  computed:{
+        user(){
+      return this.$store.state.user
+    }
+  }
 };
 </script>
 

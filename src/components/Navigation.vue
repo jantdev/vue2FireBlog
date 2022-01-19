@@ -7,10 +7,10 @@
         >
       </div>
       <div class="nav-links">
-        <RouterLinks v-if="!mobile" />
-        <div v-if="!mobile" class="profile" ref="profile">
+        <RouterLinks v-if="!mobile" :user="user"/>
+        <div v-show="user" @click="toggleProfileMenu" class="profile" ref="profile" v-if="!mobile">
           <span>{{ this.$store.state.profileInitials }}</span>
-          <div class="profile-menu">
+          <div class="profile-menu" v-show="profileMenu" >
             <div class="info">
               <p class="initials">{{ this.$store.state.profileInitials }}</p>
               <div class="right">
@@ -21,27 +21,28 @@
                 <p>{{ this.$store.state.profileUsername }}</p>
                 <p>{{ this.$store.state.profileEmail }}</p>
               </div>
-              <div class="options">
+              </div>
+              <div class="options"  >
                 <div class="option">
-                  <router-link to="#" class="option">
+                  <router-link :to="{name:'Profile'}" class="option">
                     <userIcon class="icon"/>
                     <p>Profile</p>
                   </router-link>
                 </div>
                  <div class="option">
-                  <router-link to="#" class="option">
+                  <router-link :to="{name:'Admin'}" class="option">
                     <adminIcon class="icon"/>
                     <p>Admin</p>
                   </router-link>
                 </div>
-                 <div class="option">
-                  <router-link to="#" class="option">
+                 <div class="option" @click="signOut">
+                  
                     <signOutIcon class="icon"/>
                     <p>Sign out</p>
-                  </router-link>
+                 
                 </div>
               </div>
-            </div>
+            
           </div>
         </div>
       </div>
@@ -52,6 +53,7 @@
         navStyle="mobile-nav"
         v-if="mobileNav"
         v-on:toggle-MobileNav="toggleMobileNav"
+         :user="user"
       />
     </transition>
   </header>
@@ -63,6 +65,8 @@ import userIcon from "../assets/Icons/user-alt-light.svg"
 import adminIcon from "../assets/Icons/user-crown-light.svg"
 import signOutIcon from "../assets/Icons/sign-out-alt-regular.svg"
 import RouterLinks from "./RouterLinks";
+import firebase from "firebase/app";
+import "firebase/auth";
 
 export default {
   name: "Navigation",
@@ -78,11 +82,13 @@ export default {
       mobile: false,
       mobileNav: null,
       windowWidth: null,
+      profileMenu:false
     };
   },
   created() {
     window.addEventListener("resize", this.checkScreen);
     this.checkScreen();
+   
   },
   methods: {
     checkScreen() {
@@ -97,18 +103,31 @@ export default {
     },
     toggleMobileNav() {
       this.mobileNav = !this.mobileNav;
-      console.log(this.mobileNav);
+
     },
+    toggleProfileMenu(e){
+      if(e.target === this.$refs.profile){
+      this.profileMenu = !this.profileMenu
+      }
+    },
+    signOut(){
+      firebase.auth().signOut()
+     window.location.reload()
+    }
   },
+  computed:{
+    user(){
+      return this.$store.state.user
+    }
+  }
 };
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 header {
   background-color: #fff;
   padding: 0 25px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-    0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
   z-index: 99;
   .link {
     font-weight: 500;
@@ -166,8 +185,7 @@ header {
           right: 0;
           width: 250px;
           background-color: #303030;
-          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
-            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
           .info {
             display: flex;
             align-items: center;
