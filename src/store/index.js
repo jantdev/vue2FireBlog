@@ -39,6 +39,7 @@ export default new Vuex.Store({
     profileUsername: null,
     profileId: null,
     profileInitials: null,
+    master:null
   },
   mutations: {
     toggleEditPost(state,payload){
@@ -51,6 +52,7 @@ export default new Vuex.Store({
       state.profileUsername = doc.data().username
       state.profileId = doc.id
       state.profileAdmin = doc.data().admin
+      state.master = doc.data().master
     },
     setProfileInitals(state){
       state.profileInitials = state.profileFirstName.match(/(\b\S)?/g).join("")+state.profileLastName.match(/(\b\S)?/g).join("")
@@ -69,6 +71,7 @@ export default new Vuex.Store({
      changeUsername(state,payload){
       state.profileUsername = payload
      },
+
   },
   actions: {
     async getCurrentUser({commit}){
@@ -81,13 +84,13 @@ export default new Vuex.Store({
     async updateProfileSettings({commit,state}){
       const dataBase = await db.collection('users').doc(state.profileId)
       await dataBase.update({
-        firstName: state.profileFirstName,
-        lastName:state.profileLastName,
-        usernaem:state.profileUsername
+        firstname: state.profileFirstName,
+        lastname:state.profileLastName,
+        username:state.profileUsername
 
       })
       commit('setProfileInitals')
-    }
+    },
   },
   modules: {
   }

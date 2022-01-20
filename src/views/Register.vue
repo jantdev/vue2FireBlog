@@ -57,6 +57,7 @@ export default {
       username: "y",
       email: "y@y.yy",
       admin:false,
+      master:false,
       password: "123456",
       error: null,
       errorMsg: "",
@@ -89,7 +90,8 @@ export default {
             lastName: this.lastName,
             username: this.username,
             email: this.email,
-            admin:this.admin
+            admin:this.admin,
+            master:this.master
           });
           this.$router.push({ name: "Home" });
         }  

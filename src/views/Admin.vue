@@ -2,16 +2,18 @@
    <div class="admin">
     <div class="container">
       <h2>Administration</h2>
+     
       <div class="admin-info">
+         <p>Allow create post</p>
      <div class="list" >
        <div class="user" v-for="user in users" :key="user.id">
           <p> {{user.data.email}}</p>
-       <input type="checkbox" v-model="user.data.admin"/>
+       <input type="checkbox" v-model="user.data.admin" @click="updateAdmin(user.id)"/>
        </div>
      
      </div>
         
-        <button class="button">Submit</button>
+        <button class="button" @click="closeAdmin">Close</button>
       </div>
     </div>
   </div>
@@ -19,18 +21,45 @@
 
 <script>
 import db from "../firebase/firebaseInit";
+
 export default {
 name:"Admin",
 data(){
   return{
-    users:[]
+    users:[],
+    error:null,
+    errorMsg:null
   }
+},
+methods:{
+  async updateAdmin(id){
+    const dataBase = await db.collection("users").doc(id) 
+    await dataBase.get().then((doc)=>{
+      return doc.data().admin
+    }).then((admin)=>{
+        const newadmin = !admin
+        return newadmin
+    }).then((newadmin)=>{
+      dataBase.update({
+        admin:newadmin
+      })
+      
+    }).catch(err=>{
+      this.error = true
+      this.errorMsg = err.message
+    })
+  },
+  closeAdmin(){
+    this.$router.push({name: 'Home'})
+  } 
+    
 },
 async created(){
   await db.collection("users").get().then((querySnapshot)=>{
   querySnapshot.forEach((doc) => {
-   
+   if(!doc.data().master){
         this.users.push({id:doc.id,data:doc.data()})
+   }
     });
   }).catch(err=>{
     console.log(err)

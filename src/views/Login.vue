@@ -55,12 +55,12 @@ export default {
         this.email !== "" &&
         this.password !== ""
       ) {
-        firebase.auth().signInWithEmailAndPassword(this.email,this.password).then(()=>{
-          this.$router.push({name:"Home"})
           this.error=false
           this.errorMsg = ''
-         
-
+        firebase.auth().signInWithEmailAndPassword(this.email,this.password).then(()=>{
+        
+          this.$router.push({name:"Home"})
+      
         }).catch(err=>{
           this.error = true;
           this.errorMsg = err.message

@@ -29,7 +29,7 @@
                     <p>Profile</p>
                   </router-link>
                 </div>
-                 <div class="option" v-if="admin">
+                 <div class="option" v-if="master">
                   <router-link :to="{name:'Admin'}" class="option" @click="toggleProfileMenu">
                     <adminIcon class="icon"/>
                     <p>Admin</p>
@@ -120,6 +120,9 @@ export default {
     },
     admin(){
       return this.$store.state.profileAdmin
+    },
+    master(){
+      return this.$store.state.master
     }
   }
 };
