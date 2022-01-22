@@ -30,6 +30,8 @@ export default new Vuex.Store({
         blogData: "May 1 2021",
       },
     ],
+    blogPosts:[],
+    postLoaded:null,
     blogHTML:"Write your blog title here...",
     blogTitle:"",
     blogPhotoName:"",
@@ -110,6 +112,25 @@ export default new Vuex.Store({
       })
       commit('setProfileInitals')
     },
+    async getPosts({state}){
+      const dataBase = await db.collection('blogPosts').orderBy('date','desc')
+      const dbResults = await dataBase.get()
+      dbResults.forEach((doc)=>{
+       if(!state.blogPosts.some(post=> post.blogID === doc.id)){
+          const payload = {
+            blogID:doc.data().blogID,
+            blogHTML:doc.data().blogHTML,
+            blogTitle:doc.data().blogTitle,
+            blogCoverPhoto:doc.data().blogCoverPhoto,
+            date:doc.data().date
+          }
+          state.blogPosts.push(payload)
+          
+       }
+      })
+      state.postLoaded = true
+      console.log(state.blogPosts)
+    }
   },
   modules: {
   }

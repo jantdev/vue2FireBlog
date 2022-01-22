@@ -1,12 +1,13 @@
 <template>
   <div class="create-post">
     <BlogCoverPreview v-show="this.$store.state.blogPhotoPreview" />
+    <Loading v-if="loading"/>
     <div class="container">
       <div :class="{ invisible: !error }" class="err-message">
         <p><span>Error:</span>{{ this.errorMsg }}</p>
       </div>
       <div class="blog-info">
-        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle" />
+        <input type="text" placeholder="Enter Blog Title" v-model="blogTitle" @keydown="resetForm" />
         <div class="upload-file">
           <label for="blog-photo">Upload Cover Photo</label>
           <input
@@ -15,6 +16,7 @@
             id="blog-photo"
             accept=".png, .jpg, ,jpeg"
             @change="fileChange"
+            @click="resetForm"
           />
           <button
             @click="openPreview"
@@ -24,18 +26,20 @@
             Preview Photo
           </button>
           <span>File Chosen: {{ this.$store.state.blogPhotoName }}</span>
+          <span v-if="imageUploadProgress">File upload progress: {{imageUploadProgress}} %</span>
         </div>
       </div>
-      <div class="editor">
+      <div class="editor" @click="resetForm">
         <vue-editor
           :editorOptions="editorSettings"
           v-model="blogHTML"
           useCustomImageHandler
           @image-added="imageHandler"
+          @click="resetForm" 
         />
       </div>
       <div class="blog-actions">
-        <button>Publish Blog</button>
+        <button @click.prevent="publishBlog">Publish Blog</button>
         <router-link class="router-button" :to="{name:'BlogPreview'}">Post Preview</router-link>
       </div>
     </div>
@@ -43,10 +47,11 @@
 </template>
 
 <script>
+import Loading from "../components/Loading"
 import BlogCoverPreview from "../components/BlogCoverPreview";
 import firebase from "firebase/app";
 import "firebase/storage";
-
+import db from "../firebase/firebaseInit";
 import Quill from "quill";
 window.Quill = Quill;
 
@@ -61,6 +66,7 @@ export default {
       error: null,
       errorMsg: null,
       loading: null,
+      imageUploadProgress:null,
       editorSettings: {
         modules: {
           imageResize: {},
@@ -70,6 +76,7 @@ export default {
   },
   components: {
     BlogCoverPreview,
+    Loading
   },
   computed: {
     profileId() {
@@ -97,6 +104,7 @@ export default {
   },
   methods: {
     fileChange() {
+     
       this.file = this.$refs.blogPhoto.files[0];
       const fileName = this.file.name;
       this.$store.commit("fileNameChange", fileName);
@@ -109,9 +117,10 @@ export default {
       const storageRef = firebase.storage().ref();
       const docRef = storageRef.child(`documents/blogPostPhotos/${file.name}`);
       docRef.put(file).on(
-        "state_change",
+        "state_changed",
         (snapshot) => {
           console.log(snapshot);
+          this.imageUploadProgress = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
         },
         (error) => {
           console.log(error);
@@ -123,6 +132,56 @@ export default {
         }
       );
     },
+    publishBlog(){
+      if(this.blogTitle.length!==0 && this.blogHTML.length !==0 ){
+        this.error = false
+        this.errorMsg = ""
+        if(this.file){
+          this.loading=true;
+           const storageRef = firebase.storage().ref();
+           const docRef = storageRef.child(`documents/blogCoverPhotos/${this.$store.state.blogPhotoName}`);
+            docRef.put(this.file).on(
+            "state_changed",
+              (snapshot) => {
+                console.log(snapshot);
+                this.imageUploadProgress = Math.floor((snapshot.bytesTransferred / snapshot.totalBytes) * 100)
+              },
+              (error) => {
+                this.loading=false
+                this.error = true
+                this.errorMsg = error.message
+              },
+              async () => {
+               const downloadURL = await docRef.getDownloadURL()
+               const timestamp = Date.now()
+               const dataBase = await db.collection('blogPosts').doc()
+               await dataBase.set({
+                 blogID:dataBase.id,
+                 blogHTML:this.blogHTML,
+                 blogTitle:this.blogTitle,
+                 blogCoverPhoto:downloadURL,
+                 blogCoverPhotoName:this.blogCoverPhotoName,
+                 profileId:this.profileId,
+                 date:timestamp
+
+              })
+              this.loading = false
+              this.$router.push({ name: "ViewBlog", params: { blogid: dataBase.id } })
+              }
+            )
+        return
+      }
+         this.error = true;
+      this.errorMsg = "Provide a cover photo"
+       return
+      }
+      this.error = true;
+      this.errorMsg = "Fill out title and blog text"
+    },
+    resetForm(){
+      this.error=null
+      this.errorMsg = ""
+    }
   },
 };
 </script>
