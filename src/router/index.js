@@ -13,7 +13,7 @@ import ViewBlog from "../views/ViewBlog.vue"
 import EditPost from "../views/EditPost.vue"
 import firebase from "firebase/app";
 import "firebase/auth";
-import $store from "../store/"
+import $store from "../store/index.js"
 Vue.use(VueRouter);
 
 const routes = [
