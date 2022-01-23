@@ -12,7 +12,7 @@ export default new Vuex.Store({
     postLoaded:null,
     blogHTML:"Write your blog title here...",
     blogTitle:"",
-    blogPhotoName:"",
+    blogCoverPhotoName:"",
     blogPhotoFileURL:null,
     blogPhotoPreview:null,
     editPost:null,
@@ -40,7 +40,7 @@ export default new Vuex.Store({
       state.master = doc.data().master
     },
     setProfileInitals(state){
-      state.profileInitials = state.profileFirstName.match(/(\b\S)?/g).join("")+state.profileLastName.match(/(\b\S)?/g).join("")
+      state.profileInitials = state.profileFirstName.match(/(\b\S)?/g).join("").toUpperCase()+state.profileLastName.match(/(\b\S)?/g).join("").toUpperCase()
     },
     updateUser(state,payload){
       state.user = payload
@@ -63,7 +63,7 @@ export default new Vuex.Store({
        state.blogTitle = payload
      },
      fileNameChange(state,payload){
-      state.blogPhotoName = payload
+      state.blogCoverPhotoName = payload
      },
      createFileURL(state,payload){
       state.blogPhotoFileURL = payload
@@ -73,6 +73,12 @@ export default new Vuex.Store({
      },
      filterBlogPost(state,payload){
       state.blogPosts = state.blogPosts.filter(post=> post.blogID !== payload)
+     },
+     setBlogState(state,payload){
+       state.blogTitle = payload.blogTitle
+       state.blogHTML = payload.blogHTML
+       state.blogPhotoFileURL= payload.blogCoverPhoto
+       state.blogCoverPhotoName = payload.blogCoverPhotoName
      }
   },
   actions: {
@@ -103,7 +109,8 @@ export default new Vuex.Store({
             blogHTML:doc.data().blogHTML,
             blogTitle:doc.data().blogTitle,
             blogCoverPhoto:doc.data().blogCoverPhoto,
-            blogDate:doc.data().date
+            blogDate:doc.data().date,
+            blogCoverPhotoName:doc.data().blogCoverPhotoName
           }
           state.blogPosts.push(payload)
           
@@ -116,6 +123,10 @@ export default new Vuex.Store({
       const getPost = await db.collection('blogPosts').doc(payload)
       await getPost.delete()
       commit('filterBlogPost',payload)
+    },
+    async updatePost({commit,dispatch},payload){
+      commit('filterBlogPost',payload)
+      await dispatch('getPosts')
     }
   },
   getters:{
@@ -123,7 +134,7 @@ export default new Vuex.Store({
       return state.blogPosts.slice(0,2)
     },
     blogPostCards(state){
-      return state.blogPosts.slice(3,6)
+      return state.blogPosts.slice(2,6)
     },
     blogPostById(state,blogid){
       return state.blogPosts.map(id=>{
