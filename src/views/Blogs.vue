@@ -1,12 +1,12 @@
 <template>
   <div class="blog-card-wrap">
     <div class="blog-cards container">
-      <div class="toggle-edit">
+      <div class="toggle-edit" v-if="this.$store.state.user">
         <span>Toggle editing post</span>
         <input type="checkbox" v-model="editPost" />
       </div>
       <BlogCard
-        v-for="(post, index) in sampleBlogCards"
+        v-for="(post, index) in blogCards"
         :post="post"
         :key="index"
       />
@@ -22,8 +22,8 @@ export default {
     BlogCard,
   },
   computed: {
-    sampleBlogCards() {
-      return this.$store.state.sampleBlogCards;
+    blogCards() {
+      return this.$store.state.blogPosts;
     },
     editPost: {
       get() {

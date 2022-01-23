@@ -2,7 +2,7 @@
   <div class="home">
     <BlogPost :post="welcomeScreen" v-if="!user" />
     <BlogPost
-      v-for="(post, index) in sampleBlogPost"
+      v-for="(post, index) in getBlogFeed"
       :key="index"
       :post="post"
     />
@@ -10,7 +10,7 @@
       <div class="container">
         <h3>View More Recent Blogs</h3>
         <div class="blog-cards">
-          <BlogCard v-for="(post,index) in sampleBlogCards" :post="post" :key="index"/>
+          <BlogCard v-for="(post,index) in getBlogCards" :post="post" :key="index"/>
         </div>
       </div>
     </div>
@@ -54,8 +54,11 @@ export default {
     };
   },
   computed:{
-    sampleBlogCards(){
-      return this.$store.state.sampleBlogCards
+    getBlogFeed(){
+      return this.$store.getters.blogPostFeed
+    },
+    getBlogCards(){
+      return this.$store.getters.blogPostCards
     },
     user(){
       return this.$store.state.user

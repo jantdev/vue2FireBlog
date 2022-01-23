@@ -8,28 +8,6 @@ Vue.use(Vuex)
 
 export default new Vuex.Store({
   state: {
-    sampleBlogCards: [
-      {
-        blogTitle: "Blog card #1",
-        blogCoverPhoto: "stock-1",
-        blogData: "May 1 2021",
-      },
-      {
-        blogTitle: "Blog card #2",
-        blogCoverPhoto: "stock-2",
-        blogData: "May 1 2021",
-      },
-      {
-        blogTitle: "Blog card #3",
-        blogCoverPhoto: "stock-3",
-        blogData: "May 1 2021",
-      },
-      {
-        blogTitle: "Blog card #4",
-        blogCoverPhoto: "stock-4",
-        blogData: "May 1 2021",
-      },
-    ],
     blogPosts:[],
     postLoaded:null,
     blogHTML:"Write your blog title here...",
@@ -92,6 +70,9 @@ export default new Vuex.Store({
      },
      openPhotoPreview(state){
        state.blogPhotoPreview = !state.blogPhotoPreview 
+     },
+     filterBlogPost(state,payload){
+      state.blogPosts = state.blogPosts.filter(post=> post.blogID !== payload)
      }
   },
   actions: {
@@ -122,14 +103,32 @@ export default new Vuex.Store({
             blogHTML:doc.data().blogHTML,
             blogTitle:doc.data().blogTitle,
             blogCoverPhoto:doc.data().blogCoverPhoto,
-            date:doc.data().date
+            blogDate:doc.data().date
           }
           state.blogPosts.push(payload)
           
        }
       })
       state.postLoaded = true
-      console.log(state.blogPosts)
+  
+    },
+    async deletePost({commit},payload){
+      const getPost = await db.collection('blogPosts').doc(payload)
+      await getPost.delete()
+      commit('filterBlogPost',payload)
+    }
+  },
+  getters:{
+    blogPostFeed(state){
+      return state.blogPosts.slice(0,2)
+    },
+    blogPostCards(state){
+      return state.blogPosts.slice(3,6)
+    },
+    blogPostById(state,blogid){
+      return state.blogPosts.map(id=>{
+        return id===blogid
+      })
     }
   },
   modules: {
